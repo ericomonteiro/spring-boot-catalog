@@ -19,11 +19,6 @@ class HomeController(
 
     @GetMapping
     fun hello(): String {
-        val tracer = GlobalTracer.get()
-        val span = tracer.activeSpan()
-        span.setTag("userId", "123456789")
-
-
         logger.info("here I'm")
         val address = viaCepClient.getAddressByZipCode("13081060")
         logger.info(address.toString())
