@@ -18,7 +18,7 @@ class TagsTracingGeneratorInterceptor: HandlerInterceptor {
     private val logger: Logger = LoggerFactory.getLogger(TagsTracingGeneratorInterceptor::class.java)
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        request.getHeader(HttpHeaders.AUTHORIZATION).let {
+        request.getHeader(HttpHeaders.AUTHORIZATION)?.let {
             authorizationHeader ->
             val jwtConsumer = JwtConsumerBuilder()
                 .setSkipSignatureVerification()
@@ -27,7 +27,7 @@ class TagsTracingGeneratorInterceptor: HandlerInterceptor {
             val jwt = jwtConsumer.process(authorizationHeader)
             val userId = jwt.jwtClaims.subject
             val tracer = GlobalTracer.get()
-            val span = tracer.activeSpan()
+            val span = tracer.activeSpan() ?: tracer.buildSpan("auth_check").start()
             span.setTag(CustomTags.AUTHENTICATED_USER_ID, userId)
         }
 
